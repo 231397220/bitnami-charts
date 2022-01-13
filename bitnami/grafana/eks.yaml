@@ -51,8 +51,8 @@ commonAnnotations: {}
 ## @param image.pullSecrets Grafana image pull secrets
 ##
 image:
-  registry: docker.io
-  repository: bitnami/grafana
+  registry: registry.cn-wulanchabu.aliyuncs.com
+  repository: moge1/grafana
   tag: 8.3.3-debian-10-r13
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -160,8 +160,8 @@ ldap:
 ## @param config.grafanaIniSecret Name of the Secret containing the `grafana.ini` file
 ##
 config:
-  useGrafanaIniFile: false
-  grafanaIniConfigMap: ""
+  useGrafanaIniFile: true
+  grafanaIniConfigMap: "grafana-config"
   grafanaIniSecret: ""
 ## Create dasboard provider to load dashboards, a default one is created to load dashboards
 ## from "/opt/bitnami/grafana/dashboards"
@@ -270,11 +270,7 @@ grafana:
   ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
   ## Note: podAffinityPreset, podAntiAffinityPreset, and  nodeAffinityPreset will be ignored when it's set
   ##
-  affinity: 
-    - key: "devops"
-      operator: "Equal"
-      value: "true"
-      effect: "NoSchedule"
+  affinity: {}
   ## @param grafana.nodeSelector Node labels for pod assignment
   ## Ref: https://kubernetes.io/docs/user-guide/node-selection/
   ##
@@ -282,7 +278,11 @@ grafana:
   ## @param grafana.tolerations Tolerations for pod assignment
   ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
   ##
-  tolerations: []
+  tolerations: 
+    - key: "devops"
+      operator: "Equal"
+      value: "true"
+      effect: "NoSchedule"
   ## @param grafana.topologySpreadConstraints Topology spread constraints rely on node labels to identify the topology domain(s) that each Node is in
   ## Ref: https://kubernetes.io/docs/concepts/workloads/pods/pod-topology-spread-constraints/
   ##
@@ -324,12 +324,16 @@ grafana:
     ## limits:
     ##    cpu: 500m
     ##    memory: 1Gi
-    limits: {}
+    limits: 
+       cpu: 500m
+       memory: 4Gi
     ## Examples:
     ## requests:
     ##    cpu: 250m
     ##    memory: 256Mi
-    requests: {}
+    requests: 
+       cpu: 250m
+       memory: 2Gi
   ## Grafana containers' liveness probe
   ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/#configure-probes
   ## @param grafana.livenessProbe.enabled Enable livenessProbe
@@ -484,12 +488,12 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  storageClass: ""
+  storageClass: "efs-sc"
   annotations: {}
   existingClaim: ""
   accessMode: ReadWriteOnce
   accessModes: []
-  size: 10Gi
+  size: 50Gi
 
 ## @section RBAC parameters
 
